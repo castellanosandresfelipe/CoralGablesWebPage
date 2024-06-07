@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City of Coral Gables NFT Display</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Raleway', Raleway;
+            background: #007073;
+            color: #ffffff;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .logo {
+            width: 150px;
+            margin: 20px auto;
+            display: block;
+        }
+
+        h1.title {
+            color: #ffffff; /* Dark blue */
+            margin-bottom: 40px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #ffffff; /* Primary blue */
+            display: inline-block; /* Makes the border fit to the text width */
+        }
+
+
+        .content-container {
+            margin-top: 50px; /* Separate the content from the title */
+            padding-top: 20px;
+            border-top: 2px solid #dcdcdc;
+        }
+
+
+
+        input, button {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        input {
+            width: 250px;
+        }
+
+        button {
+            background-color: #005ba1; /* Primary blue */
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 200px;
+        }
+
+        button:hover {
+            background-color: #0076d6; /* Hover blue */
+        }
+
+        #image-container {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            border-top: 2px solid #dcdcdc;
+            padding-top: 20px;
+            background: #fcf6f3;
+        }
+
+        #nft-image {
+            max-width: 100%;
+            max-height: 400px;
+            border: 2px solid #eaeaea;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        #nft-image:hover {
+            transform: scale(1.05);
+        }
+
+        #additional-info {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        #additional-info p,
+        #additional-info ul {
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        #additional-info ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #additional-info li {
+            background: #f9f9f9;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #additional-info span {
+            display: inline-block;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<body>
+
+
+    <img src="images/CG_Logo_white.png" alt="Coral Gables Logo" class="logo"> <!-- This is a comment -->
+
+   
+    
+
+    <!-- Input fields for contract address and token ID -->
+    <label for="contractAddress">Contract Address:</label>
+    <input type="text" id="contractAddress" placeholder="Enter contract address">
+
+    <label for="tokenId">Token ID:</label>
+    <input type="text" id="tokenId" placeholder="Enter token ID">
+
+    <button onclick="fetchImage()">Load Image</button>
+
+    <div id="image-container"></div>
+    <div id="additional-info"></div>
+
+    <script>
+        async function fetchImage() {
+            const contractAddress = document.getElementById('contractAddress').value;
+            const tokenId = document.getElementById('tokenId').value;
+
+            if (!contractAddress || !tokenId) {
+                alert('Please enter both contract address and token ID.');
+                return;
+            }
+
+            // Placeholder URL for fetching NFT data, replace with actual API endpoint
+            const url = `https://api.example.com/nft/${contractAddress}/${tokenId}`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                const imageUrl = data.image;
+                const traits = data.attributes;
+
+                const imageContainer = document.getElementById('image-container');
+                imageContainer.innerHTML = `<img id="nft-image" src="${imageUrl}" alt="NFT Image">`;
+
+                const additionalInfo = document.getElementById('additional-info');
+                additionalInfo.innerHTML = `
+                    <p><strong>Attributes:</strong></p>
+                    <ul>
+                        ${traits.map(trait => `<li>${trait.trait_type}: ${trait.value}</li>`).join('')}
+                    </ul>
+                `;
+            } catch (error) {
+                console.error('Error fetching NFT data:', error);
+                alert('Failed to fetch NFT data. Please check the contract address and token ID.');
+            }
+        }
+    </script>
+</body>
+
+</html>
+
+
+
+ <!-- THIS IS THE SCRIPT DO NOT EDIT -->
+    
+
+    <script>
+        function fetchImage() {
+            // Replace 'YOUR_API_KEY' with your actual OpenSea API key
+            const apiKey = 'e5f2096c0db349c7bb75161029b21c6e';
+            
+
+            // Get contract address and token ID from input fields
+            const contractAddress = document.getElementById('contractAddress').value;
+            const tokenId = document.getElementById('tokenId').value;
+
+            // OpenSea API Endpoint for fetching NFT metadata for a single NFT: https://docs.opensea.io/reference/get_nft
+            const apiUrl = 'https://api.opensea.io/api/v2/chain/avalanche/contract/' + contractAddress + '/nfts/' + tokenId;
+            console.log(apiUrl);
+
+            // Make a fetch request to the API with headers
+            fetch(apiUrl, {
+                headers: {
+                    'X-API-KEY': `${apiKey}`,
+                    'Content-Type': 'application/json',
+                    // Add any other headers required by your API
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.nft && data.nft.image_url) {
+                        const imageUrl = data.nft.image_url;
+
+                        // Display the resized image in the #image-container div
+                        const imageElement = new Image();
+                        imageElement.src = imageUrl;
+                        imageElement.alt = 'API Image';
+
+                        // Set the maximum width and height for the image
+                        const maxWidth = 600; // Adjust this value as needed
+                        const maxHeight = 600; // Adjust this value as needed
+
+                        // Ensure the image is loaded before calculating dimensions
+                        imageElement.onload = function () {
+                            const aspectRatio = imageElement.width / imageElement.height;
+
+                            // Resize the image while maintaining aspect ratio
+                            if (imageElement.width > maxWidth) {
+                                imageElement.width = maxWidth;
+                                imageElement.height = maxWidth / aspectRatio;
+                            }
+
+                            if (imageElement.height > maxHeight) {
+                                imageElement.height = maxHeight;
+                                imageElement.width = maxHeight * aspectRatio;
+                            }
+
+                            // Clear previous content and append the resized image
+                            document.getElementById('image-container').innerHTML = '';
+                            document.getElementById('image-container').appendChild(imageElement);
+
+                            // Display additional text fields below the image
+                            const additionalInfoElement = document.getElementById('additional-info');
+                            additionalInfoElement.innerHTML = `
+                                <p><strong>Name:</strong> ${data.nft.name}</p>
+                                <p><strong>Description:</strong> ${data.nft.description}</p>
+                                <p><strong>Collection:</strong> ${data.nft.collection}</p>
+                                <p><strong>Traits:</strong> ${data.nft.traits.map(trait => `<span><strong>${trait.trait_type}:</strong> ${trait.value}</span>`).join(',')}</p>
+                            `;
+                        };
+                    } else {
+                        console.error('Invalid API response format.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching image:', error);
+                });
+        }
+    </script>
+</body>
+
+</html>
