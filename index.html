@@ -126,141 +126,61 @@
     <img src="images/CG_Logo_white.png" alt="Coral Gables Logo" class="logo"> <!-- This is a comment -->
 
    
-    
+    <!-- This is the script please do not change -->
 
     <!-- Input fields for contract address and token ID -->
-
-
-    <label for="contractAddress">Contract Address:</label>
-    <input type="text" id="contractAddress" placeholder="Enter contract address">
-
-    <label for="tokenId">Token ID:</label>
-    <input type="text" id="tokenId" placeholder="Enter token ID">
-
-    <button onclick="fetchImage()">Load Image</button>
-
-    <div id="image-container"></div>
-    <div id="additional-info"></div>
-
-    <script>
-        async function fetchImage() {
-            const contractAddress = document.getElementById('contractAddress').value;
-            const tokenId = document.getElementById('tokenId').value;
-
-            if (!contractAddress || !tokenId) {
-                alert('Please enter both contract address and token ID.');
-                return;
-            }
-
-            // Placeholder URL for fetching NFT data, replace with actual API endpoint
-            const url = `https://api.example.com/nft/${contractAddress}/${tokenId}`;
-            
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-
-                const imageUrl = data.image;
-                const traits = data.attributes;
-
-                const imageContainer = document.getElementById('image-container');
-                imageContainer.innerHTML = `<img id="nft-image" src="${imageUrl}" alt="NFT Image">`;
-
-                const additionalInfo = document.getElementById('additional-info');
-                additionalInfo.innerHTML = `
-                    <p><strong>Attributes:</strong></p>
-                    <ul>
-                        ${traits.map(trait => `<li>${trait.trait_type}: ${trait.value}</li>`).join('')}
-                    </ul>
-                `;
-            } catch (error) {
-                console.error('Error fetching NFT data:', error);
-                alert('Failed to fetch NFT data. Please check the contract address and token ID.');
-            }
-        }
-    </script>
-</body>
-
-</html>
-
-
-
- <!-- THIS IS THE SCRIPT DO NOT EDIT -->
     
+  
 
-    <script>
-        
-        function fetchImage() {
-            // Replace 'YOUR_API_KEY' with your actual OpenSea API key
-            const apiKey = 'e5f2096c0db349c7bb75161029b21c6e';
-            
-
-            // Get contract address and token ID from input fields
-            const contractAddress = document.getElementById('contractAddress').value;
-            const tokenId = document.getElementById('tokenId').value;
-
-            // OpenSea API Endpoint for fetching NFT metadata for a single NFT: https://docs.opensea.io/reference/get_nft
-            const apiUrl = 'https://api.opensea.io/api/v2/chain/avalanche/contract/' + contractAddress + '/nfts/' + tokenId;
-            console.log(apiUrl);
-
-            // Make a fetch request to the API with headers
-            fetch(apiUrl, {
-                headers: {
-                    'X-API-KEY': `${apiKey}`,
-                    'Content-Type': 'application/json',
-                    // Add any other headers required by your API
-                },
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.nft && data.nft.image_url) {
-                        const imageUrl = data.nft.image_url;
-
-                        // Display the resized image in the #image-container div
-                        const imageElement = new Image();
-                        imageElement.src = imageUrl;
-                        imageElement.alt = 'API Image';
-
-                        // Set the maximum width and height for the image
-                        const maxWidth = 600; // Adjust this value as needed
-                        const maxHeight = 600; // Adjust this value as needed
-
-                        // Ensure the image is loaded before calculating dimensions
-                        imageElement.onload = function () {
-                            const aspectRatio = imageElement.width / imageElement.height;
-
-                            // Resize the image while maintaining aspect ratio
-                            if (imageElement.width > maxWidth) {
-                                imageElement.width = maxWidth;
-                                imageElement.height = maxWidth / aspectRatio;
-                            }
-
-                            if (imageElement.height > maxHeight) {
-                                imageElement.height = maxHeight;
-                                imageElement.width = maxHeight * aspectRatio;
-                            }
-
-                            // Clear previous content and append the resized image
-                            document.getElementById('image-container').innerHTML = '';
-                            document.getElementById('image-container').appendChild(imageElement);
-
-                            // Display additional text fields below the image
-                            const additionalInfoElement = document.getElementById('additional-info');
-                            additionalInfoElement.innerHTML = `
-                                <p><strong>Name:</strong> ${data.nft.name}</p>
-                                <p><strong>Description:</strong> ${data.nft.description}</p>
-                                <p><strong>Collection:</strong> ${data.nft.collection}</p>
-                                <p><strong>Traits:</strong> ${data.nft.traits.map(trait => `<span><strong>${trait.trait_type}:</strong> ${trait.value}</span>`).join(',')}</p>
-                            `;
-                        };
-                    } else {
-                        console.error('Invalid API response format.');
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>OpenSea API Collection</title>
+    </head>
+    <body>
+        <h1>OpenSea Collection</h1>
+        <div id="collection-container"></div>
+    
+        <script>
+            async function fetchCollection() {
+                try {
+                    const response = await fetch('https://api.opensea.io/api/v2/collections?chain=avalanche&creator_username=wsaliba&include_hidden=true&limit=100&order_by=created_date', {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'x-api-key': 'e5f2096c0db349c7bb75161029b21c6e'
+                        }
+                    });
+    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
                     }
-                })
-                .catch(error => {
-                    console.error('Error fetching image:', error);
+    
+                    const data = await response.json();
+                    displayCollection(data.collections);
+                } catch (error) {
+                    console.error('Error fetching collection:', error);
+                }
+            }
+    
+            function displayCollection(collections) {
+                const container = document.getElementById('collection-container');
+    
+                collections.forEach(collection => {
+                    const collectionElement = document.createElement('div');
+                    collectionElement.innerHTML = `
+                        <a href="collection.html?slug=${collection.collection}">
+                            <h2>${collection.name}</h2>
+                            <img src="${collection.image_url}" alt="${collection.name}" width="200">
+                        </a>
+                    `;
+                    container.appendChild(collectionElement);
                 });
-        }
-    </script>
-</body>
-
-</html>
+            }
+    
+            fetchCollection();
+        </script>
+    </body>
+    </html>
+    
